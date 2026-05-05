@@ -1,4 +1,4 @@
-# regmap
+# vegmap
 
 **GPU-accelerated document similarity and knowledge graph engine**
 
