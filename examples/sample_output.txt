@@ -1,0 +1,71 @@
+regmap analyze
+  Source corpus : 16 sections  (corpus_A, corpus_B)
+  Target corpus : 8 sections  (doc_C)
+  Similarity    : 16 × 8 × 768 dims  range=[0.7915, 0.9774]
+
+
+====================================================================================================
+SIMILARITY MATRIX  (threshold: 0.80)
+Source corpus: 16 sections   Target corpus: 8 sections
+====================================================================================================
+SOURCE SECTION                          BEST TARGET MATCH                           SIM  STATUS
+----------------------------------------------------------------------------------------------------
+corpus_A | PURPOSE                      doc_C | REQUIREMENTS                     0.9312  COVERED
+corpus_A | CANCELS/SUPERSEDES           doc_C | CANCELLATIONS                    0.9087  COVERED
+corpus_A | APPLICABILITY                doc_C | APPLICABILITY                    0.9774  COVERED
+corpus_A | REQUIREMENTS                 doc_C | REQUIREMENTS                     0.9680  COVERED
+corpus_A | RESPONSIBILITIES             doc_C | RESPONSIBILITIES                 0.9765  COVERED
+corpus_A | INVOKED STANDARDS            doc_C | APPLICABILITY                    0.9262  COVERED
+corpus_A | REFERENCES                   doc_C | REFERENCES                       0.9634  COVERED
+corpus_A | DEFINITIONS                  doc_C | APPLICABILITY                    0.8704  COVERED
+corpus_A | CONTACT                      doc_C | CONTACT                          0.9398  COVERED
+corpus_B | OBJECTIVES                   doc_C | CONTACT                          0.9619  COVERED
+corpus_B | CANCELLATION                 doc_C | APPLICABILITY                    0.9245  COVERED
+corpus_B | APPLICABILITY                doc_C | APPLICABILITY                    0.9649  COVERED
+corpus_B | REQUIREMENTS                 doc_C | APPLICABILITY                    0.9671  COVERED
+corpus_B | RESPONSIBILITIES             doc_C | RESPONSIBILITIES                 0.9729  COVERED
+corpus_B | REFERENCES                   doc_C | CONTACT                          0.9455  COVERED
+corpus_B | CONTACT                      doc_C | CONTACT                          0.9382  COVERED
+====================================================================================================
+SUMMARY                                 COVERED: 16  PARTIAL: 0  GAP: 0  Coverage: 100.0%
+====================================================================================================
+
+
+========================================================================
+GAP ANALYSIS  (threshold: 0.80)
+0 of 16 source sections are not covered
+========================================================================
+All source sections are covered.
+========================================================================
+
+
+========================================================================
+CRITICAL DOCUMENTS  (PageRank, top 10)
+========================================================================
+    #     Score  Document                Section
+------------------------------------------------------------------------
+  ★   1   0.00625  corpus_A                PURPOSE
+  ·   2   0.00625  corpus_A                CANCELS/SUPERSEDES
+  ·   3   0.00625  corpus_A                APPLICABILITY
+      4   0.00625  corpus_A                REQUIREMENTS
+      5   0.00625  corpus_A                RESPONSIBILITIES
+      6   0.00625  corpus_A                INVOKED STANDARDS
+      7   0.00625  corpus_A                REFERENCES
+      8   0.00625  corpus_A                DEFINITIONS
+      9   0.00625  corpus_A                CONTACT
+     10   0.00625  corpus_B                OBJECTIVES
+  ... 6 more source sections
+
+MOST-CONNECTED TARGETS  (top 10)
+------------------------------------------------------------------------
+    #     Score  Document                Section
+------------------------------------------------------------------------
+      1   0.01697  doc_C                   CANCELLATIONS
+      2   0.01697  doc_C                   APPLICABILITY
+      3   0.01697  doc_C                   REQUIREMENTS
+      4   0.01697  doc_C                   RESPONSIBILITIES
+      5   0.01697  doc_C                   DEFINITIONS
+      6   0.01697  doc_C                   REFERENCES
+      7   0.01697  doc_C                   CONTACT
+      8   0.01621  doc_C                   PURPOSE
+========================================================================

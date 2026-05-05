@@ -1,0 +1,89 @@
+digraph regmap {
+  graph [rankdir=LR fontname="Helvetica" label="regmap Knowledge Graph" labelloc=t fontsize=14];
+  node [fontname="Helvetica" fontsize=10];
+  edge [fontname="Helvetica" fontsize=8];
+
+  // Source corpus nodes
+  subgraph cluster_source {
+    label="Source Corpus"; style=filled; color=lightblue;
+    "SRC-0" [label="corpus_A\nPURPOSE" shape=box style=filled fillcolor=lightblue];
+    "SRC-1" [label="corpus_A\nCANCELS/SUPERSEDES" shape=box style=filled fillcolor=lightblue];
+    "SRC-2" [label="corpus_A\nAPPLICABILITY" shape=box style=filled fillcolor=lightblue];
+    "SRC-3" [label="corpus_A\nREQUIREMENTS" shape=box style=filled fillcolor=lightblue];
+    "SRC-4" [label="corpus_A\nRESPONSIBILITIES" shape=box style=filled fillcolor=lightblue];
+    "SRC-5" [label="corpus_A\nINVOKED STANDARDS" shape=box style=filled fillcolor=lightblue];
+    "SRC-6" [label="corpus_A\nREFERENCES" shape=box style=filled fillcolor=lightblue];
+    "SRC-7" [label="corpus_A\nDEFINITIONS" shape=box style=filled fillcolor=lightblue];
+    "SRC-8" [label="corpus_A\nCONTACT" shape=box style=filled fillcolor=lightblue];
+    "SRC-9" [label="corpus_B\nOBJECTIVES" shape=box style=filled fillcolor=lightblue];
+    "SRC-10" [label="corpus_B\nCANCELLATION" shape=box style=filled fillcolor=lightblue];
+    "SRC-11" [label="corpus_B\nAPPLICABILITY" shape=box style=filled fillcolor=lightblue];
+    "SRC-12" [label="corpus_B\nREQUIREMENTS" shape=box style=filled fillcolor=lightblue];
+    "SRC-13" [label="corpus_B\nRESPONSIBILITIES" shape=box style=filled fillcolor=lightblue];
+    "SRC-14" [label="corpus_B\nREFERENCES" shape=box style=filled fillcolor=lightblue];
+    "SRC-15" [label="corpus_B\nCONTACT" shape=box style=filled fillcolor=lightblue];
+  }
+
+  // Target corpus nodes
+  subgraph cluster_target {
+    label="Target Corpus"; style=filled; color=lightgreen;
+    "TGT-0" [label="doc_C\nPURPOSE" shape=ellipse style=filled fillcolor=lightgreen];
+    "TGT-1" [label="doc_C\nCANCELLATIONS" shape=ellipse style=filled fillcolor=lightgreen];
+    "TGT-2" [label="doc_C\nAPPLICABILITY" shape=ellipse style=filled fillcolor=lightgreen];
+    "TGT-3" [label="doc_C\nREQUIREMENTS" shape=ellipse style=filled fillcolor=lightgreen];
+    "TGT-4" [label="doc_C\nRESPONSIBILITIES" shape=ellipse style=filled fillcolor=lightgreen];
+    "TGT-5" [label="doc_C\nDEFINITIONS" shape=ellipse style=filled fillcolor=lightgreen];
+    "TGT-6" [label="doc_C\nREFERENCES" shape=ellipse style=filled fillcolor=lightgreen];
+    "TGT-7" [label="doc_C\nCONTACT" shape=ellipse style=filled fillcolor=lightgreen];
+  }
+
+  // Similarity edges
+  "SRC-0" -> "TGT-3" [label="0.931" color="#006400" penwidth="1.5"];
+  "SRC-0" -> "TGT-2" [label="0.930" color="#006400" penwidth="1.5"];
+  "SRC-0" -> "TGT-7" [label="0.930" color="#006400" penwidth="1.5"];
+  "SRC-1" -> "TGT-1" [label="0.909" color="#006400" penwidth="1.4"];
+  "SRC-1" -> "TGT-7" [label="0.884" color="#228B22" penwidth="1.3"];
+  "SRC-1" -> "TGT-6" [label="0.884" color="#228B22" penwidth="1.3"];
+  "SRC-2" -> "TGT-2" [label="0.977" color="#006400" penwidth="1.7"];
+  "SRC-2" -> "TGT-7" [label="0.966" color="#006400" penwidth="1.7"];
+  "SRC-2" -> "TGT-3" [label="0.962" color="#006400" penwidth="1.6"];
+  "SRC-3" -> "TGT-3" [label="0.968" color="#006400" penwidth="1.7"];
+  "SRC-3" -> "TGT-7" [label="0.964" color="#006400" penwidth="1.7"];
+  "SRC-3" -> "TGT-4" [label="0.963" color="#006400" penwidth="1.7"];
+  "SRC-4" -> "TGT-4" [label="0.977" color="#006400" penwidth="1.7"];
+  "SRC-4" -> "TGT-3" [label="0.975" color="#006400" penwidth="1.7"];
+  "SRC-4" -> "TGT-7" [label="0.969" color="#006400" penwidth="1.7"];
+  "SRC-5" -> "TGT-2" [label="0.926" color="#006400" penwidth="1.5"];
+  "SRC-5" -> "TGT-7" [label="0.917" color="#006400" penwidth="1.5"];
+  "SRC-5" -> "TGT-3" [label="0.908" color="#006400" penwidth="1.4"];
+  "SRC-6" -> "TGT-6" [label="0.963" color="#006400" penwidth="1.7"];
+  "SRC-6" -> "TGT-2" [label="0.955" color="#006400" penwidth="1.6"];
+  "SRC-6" -> "TGT-7" [label="0.944" color="#006400" penwidth="1.6"];
+  "SRC-7" -> "TGT-2" [label="0.870" color="#228B22" penwidth="1.3"];
+  "SRC-7" -> "TGT-6" [label="0.867" color="#228B22" penwidth="1.3"];
+  "SRC-7" -> "TGT-7" [label="0.865" color="#228B22" penwidth="1.3"];
+  "SRC-8" -> "TGT-7" [label="0.940" color="#006400" penwidth="1.6"];
+  "SRC-8" -> "TGT-2" [label="0.938" color="#006400" penwidth="1.6"];
+  "SRC-8" -> "TGT-3" [label="0.933" color="#006400" penwidth="1.5"];
+  "SRC-9" -> "TGT-7" [label="0.962" color="#006400" penwidth="1.6"];
+  "SRC-9" -> "TGT-3" [label="0.960" color="#006400" penwidth="1.6"];
+  "SRC-9" -> "TGT-2" [label="0.957" color="#006400" penwidth="1.6"];
+  "SRC-10" -> "TGT-2" [label="0.925" color="#006400" penwidth="1.5"];
+  "SRC-10" -> "TGT-7" [label="0.923" color="#006400" penwidth="1.5"];
+  "SRC-10" -> "TGT-3" [label="0.904" color="#006400" penwidth="1.4"];
+  "SRC-11" -> "TGT-2" [label="0.965" color="#006400" penwidth="1.7"];
+  "SRC-11" -> "TGT-7" [label="0.962" color="#006400" penwidth="1.6"];
+  "SRC-11" -> "TGT-3" [label="0.959" color="#006400" penwidth="1.6"];
+  "SRC-12" -> "TGT-2" [label="0.967" color="#006400" penwidth="1.7"];
+  "SRC-12" -> "TGT-7" [label="0.967" color="#006400" penwidth="1.7"];
+  "SRC-12" -> "TGT-3" [label="0.964" color="#006400" penwidth="1.7"];
+  "SRC-13" -> "TGT-4" [label="0.973" color="#006400" penwidth="1.7"];
+  "SRC-13" -> "TGT-7" [label="0.969" color="#006400" penwidth="1.7"];
+  "SRC-13" -> "TGT-3" [label="0.967" color="#006400" penwidth="1.7"];
+  "SRC-14" -> "TGT-7" [label="0.946" color="#006400" penwidth="1.6"];
+  "SRC-14" -> "TGT-6" [label="0.944" color="#006400" penwidth="1.6"];
+  "SRC-14" -> "TGT-2" [label="0.942" color="#006400" penwidth="1.6"];
+  "SRC-15" -> "TGT-7" [label="0.938" color="#006400" penwidth="1.6"];
+  "SRC-15" -> "TGT-2" [label="0.933" color="#006400" penwidth="1.5"];
+  "SRC-15" -> "TGT-6" [label="0.933" color="#006400" penwidth="1.5"];
+}
