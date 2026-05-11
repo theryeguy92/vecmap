@@ -9,7 +9,8 @@ SAMPLE_DOCS = Path(__file__).resolve().parent / "sample_docs" / "parsed"
 @pytest.fixture
 def sample_dir():
     """Path to parsed sample data with .npy embeddings and _meta.json files."""
-    assert SAMPLE_DOCS.is_dir(), f"Sample docs not found: {SAMPLE_DOCS}"
+    if not SAMPLE_DOCS.is_dir():
+        pytest.skip(f"Sample docs not available in CI: {SAMPLE_DOCS}")
     return SAMPLE_DOCS
 
 
