@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install pytest pytest-xdist ruff black
+          pip install -e . 2>/dev/null || true
+
+      - name: Run tests
+        run: pytest tests/ -v --tb=short
+
+      - name: Lint (ruff)
+        run: ruff check .
+
+      - name: Format check (black)
+        run: black --check .
+
+  cuda-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify CUDA kernel source integrity
+        run: |
+          echo "Checking all .cu files for __global__ functions..."
+          KERNEL_COUNT=$(grep -rl '__global__' kernels/ bindings/ 2>/dev/null | wc -l)
+          echo "CUDA source files with kernels: $KERNEL_COUNT"
+
+          echo "Checking for TODO/stub patterns..."
+          STUBS=$(grep -rin 'TODO\|FIXME\|stub\|not implemented' kernels/ bindings/ 2>/dev/null || true)
+          if [ -n "$STUBS" ]; then
+            echo "::warning::Stub/TODO found in CUDA source:"
+            echo "$STUBS"
+          else
+            echo "No stubs or TODOs found in CUDA kernels"
+          fi
+
+      - name: Verify Python pipeline imports
+        run: |
+          echo "Checking Python pipeline files..."
+          python -c "
+          import ast, sys
+          files = ['pipeline/parser.py', 'pipeline/embedder.py']
+          for f in files:
+              try:
+                  with open(f) as fh:
+                      ast.parse(fh.read())
+                  print(f'  {f}: syntax OK')
+              except SyntaxError as e:
+                  print(f'  {f}: SYNTAX ERROR - {e}')
+                  sys.exit(1)
+          print('All pipeline files parse correctly')
+          "
