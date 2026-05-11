@@ -1,7 +1,7 @@
 """Tests for graph/builder.py — EmbeddingSet loading."""
 
 import numpy as np
-from graph.builder import load_embeddings, EmbeddingSet, Section
+from graph.builder import load_embeddings, EmbeddingSet
 
 
 class TestEmbeddingSetLoad:
@@ -17,9 +17,9 @@ class TestEmbeddingSetLoad:
         """Every section gets a unique global_idx across all documents."""
         es = load_embeddings([sample_dir])
         indices = [s.global_idx for s in es.sections]
-        assert indices == list(range(es.n)), (
-            f"global_idx should be sequential 0..{es.n - 1}"
-        )
+        assert indices == list(
+            range(es.n)
+        ), f"global_idx should be sequential 0..{es.n - 1}"
 
     def test_sections_have_required_fields(self, sample_dir):
         """Every section has the expected dataclass fields populated."""
@@ -74,5 +74,6 @@ class TestEmbeddingSetLoad:
     def test_nonexistent_file_raises(self):
         """Loading a non-existent .npy raises FileNotFoundError."""
         from pathlib import Path
+
         with np.testing.assert_raises(FileNotFoundError):
             load_embeddings([Path("/nonexistent/file.npy")])

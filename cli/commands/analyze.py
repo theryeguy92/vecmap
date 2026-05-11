@@ -18,6 +18,7 @@ def _load_bridge(project_root: Path):
         sys.path.insert(0, str(build_dir))
     try:
         import regmap_cuda
+
         return regmap_cuda
     except ImportError as e:
         print(f"ERROR: Could not import regmap_cuda from {build_dir}")
@@ -59,8 +60,10 @@ def run_analyze(args, project_root: Path) -> None:
     t_sim_start = time.perf_counter()
     sim_matrix = cuda.cosine_similarity(regs.embeddings, procs.embeddings)
     t_sim = (time.perf_counter() - t_sim_start) * 1000
-    print(f"  Done in {t_sim:.2f} ms  "
-          f"sim range=[{sim_matrix.min():.4f}, {sim_matrix.max():.4f}]")
+    print(
+        f"  Done in {t_sim:.2f} ms  "
+        f"sim range=[{sim_matrix.min():.4f}, {sim_matrix.max():.4f}]"
+    )
 
     # ------------------------------------------------------------------ #
     # 3. Threshold filter → CSR graph                                      #
@@ -69,27 +72,29 @@ def run_analyze(args, project_root: Path) -> None:
     graph = cuda.threshold_filter(sim_matrix, threshold)
     n_nodes = graph["num_nodes"]
     n_edges = graph["num_edges"]
-    print(f"  threshold_filter(t={threshold}): {n_edges} edges  "
-          f"({n_edges / max(regs.n * procs.n, 1) * 100:.1f}% of matrix)")
+    print(
+        f"  threshold_filter(t={threshold}): {n_edges} edges  "
+        f"({n_edges / max(regs.n * procs.n, 1) * 100:.1f}% of matrix)"
+    )
 
-    rp  = graph["row_ptr"].astype(np.int32)
-    ci  = graph["col_indices"].astype(np.int32)
-    nr  = graph["num_regs"]
+    rp = graph["row_ptr"].astype(np.int32)
+    ci = graph["col_indices"].astype(np.int32)
+    nr = graph["num_regs"]
     np_ = graph["num_procs"]
     vals_dist = np.maximum(0.0, 1.0 - graph["values"]).astype(np.float32)
 
     # ------------------------------------------------------------------ #
     # 4. Similarity matrix                                                  #
     # ------------------------------------------------------------------ #
-    summary = print_matrix(sim_matrix, regs, procs, threshold=threshold)
+    _summary = print_matrix(sim_matrix, regs, procs, threshold=threshold)
 
     # ------------------------------------------------------------------ #
     # 5. Gap analysis via BFS                                               #
     # ------------------------------------------------------------------ #
     bfs_result = cuda.bfs(rp, ci, n_nodes, nr, np_, source=0)
-    gap_procs  = int(bfs_result["num_gaps"])
+    _gap_procs = int(bfs_result["num_gaps"])
 
-    gap_rows = print_gaps(sim_matrix, regs, procs, threshold=threshold)
+    _gap_rows = print_gaps(sim_matrix, regs, procs, threshold=threshold)
 
     # ------------------------------------------------------------------ #
     # 6. PageRank critical document ranking                                 #
@@ -106,8 +111,10 @@ def run_analyze(args, project_root: Path) -> None:
     if n_edges > 0 and args.verbose:
         dijk = cuda.dijkstra(rp, ci, vals_dist, n_nodes, source=0)
         finite = dijk["distances"][dijk["distances"] < 1e8]
-        print(f"\nDijkstra from REG-0: {len(finite)} reachable nodes  "
-              f"closest={finite.min():.4f}  farthest={finite.max():.4f}")
+        print(
+            f"\nDijkstra from REG-0: {len(finite)} reachable nodes  "
+            f"closest={finite.min():.4f}  farthest={finite.max():.4f}"
+        )
 
     # ------------------------------------------------------------------ #
     # 8. Optional: knowledge graph export                                   #
@@ -115,7 +122,9 @@ def run_analyze(args, project_root: Path) -> None:
     if args.graph:
         dot_path = Path(args.graph)
         dot_path, n_dot_edges = export_dot(
-            sim_matrix, regs, procs,
+            sim_matrix,
+            regs,
+            procs,
             threshold=threshold,
             output_path=dot_path,
         )
@@ -126,5 +135,4 @@ def run_analyze(args, project_root: Path) -> None:
     # 9. Timing summary                                                     #
     # ------------------------------------------------------------------ #
     t_total = (time.perf_counter() - t0) * 1000
-    print(f"\nTotal wall time: {t_total:.1f} ms  "
-          f"(GPU similarity: {t_sim:.2f} ms)")
+    print(f"\nTotal wall time: {t_total:.1f} ms  " f"(GPU similarity: {t_sim:.2f} ms)")

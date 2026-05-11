@@ -14,29 +14,28 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 
 
 @dataclass
 class Section:
-    stem:        str      # filename stem (e.g. "0200.2a")
-    doc_id:      str      # "DOE O 200.2A" or stem if blank
-    doc_type:    str
-    subject:     str
-    section_id:  str
-    heading:     str
+    stem: str  # filename stem (e.g. "0200.2a")
+    doc_id: str  # "DOE O 200.2A" or stem if blank
+    doc_type: str
+    subject: str
+    section_id: str
+    heading: str
     text_preview: str
     obligations: int
-    citations:   int
-    global_idx:  int      # row in the stacked embedding matrix
+    citations: int
+    global_idx: int  # row in the stacked embedding matrix
 
 
 @dataclass
 class EmbeddingSet:
-    sections:   list[Section]
-    embeddings: np.ndarray   # float32 [N, 768]
+    sections: list[Section]
+    embeddings: np.ndarray  # float32 [N, 768]
 
     @property
     def n(self) -> int:
@@ -60,9 +59,18 @@ def _load_one(npy_path: Path) -> tuple[np.ndarray, list[Section]]:
     if not meta_path.exists():
         # Fallback: create synthetic meta
         sections = [
-            Section(stem=stem, doc_id=stem, doc_type="Order", subject=stem,
-                    section_id=str(i), heading=f"SEC-{i}", text_preview="",
-                    obligations=0, citations=0, global_idx=0)
+            Section(
+                stem=stem,
+                doc_id=stem,
+                doc_type="Order",
+                subject=stem,
+                section_id=str(i),
+                heading=f"SEC-{i}",
+                text_preview="",
+                obligations=0,
+                citations=0,
+                global_idx=0,
+            )
             for i in range(embeddings.shape[0])
         ]
     else:
@@ -71,18 +79,20 @@ def _load_one(npy_path: Path) -> tuple[np.ndarray, list[Section]]:
         sections = []
         for i, m in enumerate(raw):
             doc_id = m.get("doc_id") or stem
-            sections.append(Section(
-                stem        = stem,
-                doc_id      = doc_id,
-                doc_type    = m.get("doc_type", "Order"),
-                subject     = m.get("subject", ""),
-                section_id  = m.get("section_id", str(i)),
-                heading     = m.get("heading", ""),
-                text_preview= m.get("text_preview", ""),
-                obligations = m.get("obligations", 0),
-                citations   = m.get("citations", 0),
-                global_idx  = 0,    # filled in below
-            ))
+            sections.append(
+                Section(
+                    stem=stem,
+                    doc_id=doc_id,
+                    doc_type=m.get("doc_type", "Order"),
+                    subject=m.get("subject", ""),
+                    section_id=m.get("section_id", str(i)),
+                    heading=m.get("heading", ""),
+                    text_preview=m.get("text_preview", ""),
+                    obligations=m.get("obligations", 0),
+                    citations=m.get("citations", 0),
+                    global_idx=0,  # filled in below
+                )
+            )
 
     return embeddings, sections
 
@@ -108,7 +118,7 @@ def load_embeddings(sources: list[Path]) -> EmbeddingSet:
         raise ValueError(f"No *_sections.npy files found in {sources}")
 
     all_embeddings: list[np.ndarray] = []
-    all_sections:   list[Section]    = []
+    all_sections: list[Section] = []
     global_idx = 0
 
     for p in npy_paths:
@@ -119,5 +129,7 @@ def load_embeddings(sources: list[Path]) -> EmbeddingSet:
         all_sections.extend(secs)
         global_idx += len(secs)
 
-    stacked = np.vstack(all_embeddings) if all_embeddings else np.zeros((0, 768), np.float32)
+    stacked = (
+        np.vstack(all_embeddings) if all_embeddings else np.zeros((0, 768), np.float32)
+    )
     return EmbeddingSet(sections=all_sections, embeddings=stacked)

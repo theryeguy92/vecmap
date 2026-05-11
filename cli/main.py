@@ -17,15 +17,24 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 def _add_reg_proc_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
-        "--regs", nargs="+", metavar="PATH", required=True,
+        "--regs",
+        nargs="+",
+        metavar="PATH",
+        required=True,
         help="regulation embeddings: *_sections.npy file(s) or directory",
     )
     parser.add_argument(
-        "--procs", nargs="+", metavar="PATH", required=True,
+        "--procs",
+        nargs="+",
+        metavar="PATH",
+        required=True,
         help="procedure embeddings: *_sections.npy file(s) or directory",
     )
     parser.add_argument(
-        "--threshold", type=float, default=0.75, metavar="T",
+        "--threshold",
+        type=float,
+        default=0.75,
+        metavar="T",
         help="similarity threshold for compliance edge (default: 0.75)",
     )
 
@@ -51,11 +60,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_reg_proc_args(analyze)
     analyze.add_argument(
-        "--graph", metavar="FILE", default=None,
+        "--graph",
+        metavar="FILE",
+        default=None,
         help="export knowledge graph to a Graphviz .dot file",
     )
     analyze.add_argument(
-        "--verbose", action="store_true",
+        "--verbose",
+        action="store_true",
         help="show extra algorithm outputs (Dijkstra paths, etc.)",
     )
 
@@ -68,12 +80,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_reg_proc_args(report)
     report.add_argument(
-        "--type", required=True,
+        "--type",
+        required=True,
         choices=["gaps", "coverage", "rankings", "hierarchy"],
         help="report type",
     )
     report.add_argument(
-        "--output", metavar="FILE", default=None,
+        "--output",
+        metavar="FILE",
+        default=None,
         help="write report text to FILE (default: stdout only)",
     )
 
@@ -85,7 +100,8 @@ def build_parser() -> argparse.ArgumentParser:
         help="Benchmark CUDA kernels",
     )
     bench.add_argument(
-        "--kernel", default="full",
+        "--kernel",
+        default="full",
         choices=["cosine", "graph", "full"],
         help="which kernels to benchmark (default: full)",
     )
@@ -99,18 +115,21 @@ def main(argv: list[str] | None = None) -> None:
         sys.path.insert(0, str(PROJECT_ROOT))
 
     parser = build_parser()
-    args   = parser.parse_args(argv)
+    args = parser.parse_args(argv)
 
     if args.command == "analyze":
         from cli.commands.analyze import run_analyze
+
         run_analyze(args, PROJECT_ROOT)
 
     elif args.command == "report":
         from cli.commands.report import run_report
+
         run_report(args, PROJECT_ROOT)
 
     elif args.command == "benchmark":
         from cli.commands.benchmark import run_benchmark
+
         run_benchmark(args, PROJECT_ROOT)
 
     else:

@@ -8,11 +8,11 @@ import numpy as np
 
 from graph.builder import EmbeddingSet
 
-_RED    = "\033[31m"
+_RED = "\033[31m"
 _YELLOW = "\033[33m"
-_CYAN   = "\033[36m"
-_BOLD   = "\033[1m"
-_RESET  = "\033[0m"
+_CYAN = "\033[36m"
+_BOLD = "\033[1m"
+_RESET = "\033[0m"
 
 
 def print_gaps(
@@ -32,16 +32,18 @@ def print_gaps(
     gaps = []
     for i in range(M):
         row = sim_matrix[i]
-        best_j   = int(row.argmax())
+        best_j = int(row.argmax())
         best_sim = float(row[best_j])
         if best_sim < threshold:
-            gaps.append({
-                "reg_idx":    i,
-                "best_proc":  best_j,
-                "best_sim":   best_sim,
-                "reg_label":  regs.label(i),
-                "proc_label": procs.label(best_j),
-            })
+            gaps.append(
+                {
+                    "reg_idx": i,
+                    "best_proc": best_j,
+                    "best_sim": best_sim,
+                    "reg_label": regs.label(i),
+                    "proc_label": procs.label(best_j),
+                }
+            )
 
     line_w = 72
     print(f"\n{_BOLD}{'='*line_w}{_RESET}")
@@ -57,12 +59,14 @@ def print_gaps(
     for g in gaps:
         sim = g["best_sim"]
         sev_colour = _RED if sim < 0.5 else _YELLOW
-        sev_label  = "NO MATCH" if sim < 0.5 else "PARTIAL "
+        sev_label = "NO MATCH" if sim < 0.5 else "PARTIAL "
 
         print(f"\n{sev_colour}[{sev_label}]{_RESET}  {_BOLD}{g['reg_label']}{_RESET}")
         if sim >= 0.01:
-            print(f"           Closest match: {_CYAN}{g['proc_label']}{_RESET}  "
-                  f"(sim={sim:.4f})")
+            print(
+                f"           Closest match: {_CYAN}{g['proc_label']}{_RESET}  "
+                f"(sim={sim:.4f})"
+            )
         else:
             print("           No target section found at all")
 
@@ -73,9 +77,11 @@ def print_gaps(
 
     print(f"\n{'='*line_w}")
     critical = sum(1 for g in gaps if g["best_sim"] < 0.5)
-    partial  = len(gaps) - critical
-    print(f"  {_RED}Critical gaps (sim < 0.5): {critical}{_RESET}   "
-          f"{_YELLOW}Partial gaps:  {partial}{_RESET}")
+    partial = len(gaps) - critical
+    print(
+        f"  {_RED}Critical gaps (sim < 0.5): {critical}{_RESET}   "
+        f"{_YELLOW}Partial gaps:  {partial}{_RESET}"
+    )
     print("=" * line_w)
 
     return gaps

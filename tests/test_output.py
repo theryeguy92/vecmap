@@ -24,6 +24,7 @@ class Section:
 @dataclass
 class FakeEmbeddingSet:
     """Minimal EmbeddingSet-like for output tests."""
+
     sections: list
     embeddings: np.ndarray
 
@@ -39,10 +40,11 @@ class FakeEmbeddingSet:
 def _make_es(n: int) -> FakeEmbeddingSet:
     """Create a fake EmbeddingSet with n sections."""
     sections = [
-        Section(stem=f"DOC-{i}", doc_id=f"DOE-O-{i}", global_idx=i)
-        for i in range(n)
+        Section(stem=f"DOC-{i}", doc_id=f"DOE-O-{i}", global_idx=i) for i in range(n)
     ]
-    return FakeEmbeddingSet(sections=sections, embeddings=np.zeros((n, 768), dtype=np.float32))
+    return FakeEmbeddingSet(
+        sections=sections, embeddings=np.zeros((n, 768), dtype=np.float32)
+    )
 
 
 def _make_sim_matrix(M: int, N: int, seed: int = 42) -> np.ndarray:
@@ -165,6 +167,6 @@ class TestOutputGaps:
         finally:
             sys.stdout = saved
 
-        assert len(gaps_lo) <= len(gaps_hi), (
-            "Higher threshold should produce same or more gaps"
-        )
+        assert len(gaps_lo) <= len(
+            gaps_hi
+        ), "Higher threshold should produce same or more gaps"

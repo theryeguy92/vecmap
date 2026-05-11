@@ -32,7 +32,5 @@ def two_corpora(sample_dir):
     a = load_embeddings([npy_files[0].parent])
     # For a second corpus, use a subset of the same dir
     # (different slice of files)
-    b = load_embeddings(
-        [p for p in npy_files[split : split + 3]]
-    )
+    b = load_embeddings([p for p in npy_files[split : split + 3]])
     return a, b

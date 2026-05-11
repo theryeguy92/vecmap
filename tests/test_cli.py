@@ -1,8 +1,5 @@
 """Tests for CLI module — argument parsing and command structure."""
 
-import sys
-from pathlib import Path
-from unittest.mock import patch
 import pytest
 
 
@@ -12,11 +9,15 @@ class TestCLIArgs:
         from cli.main import build_parser
 
         parser = build_parser()
-        args = parser.parse_args([
-            "analyze",
-            "--regs", "/tmp/emb_a",
-            "--procs", "/tmp/emb_b",
-        ])
+        args = parser.parse_args(
+            [
+                "analyze",
+                "--regs",
+                "/tmp/emb_a",
+                "--procs",
+                "/tmp/emb_b",
+            ]
+        )
         assert args.command == "analyze"
         assert args.regs == ["/tmp/emb_a"]
         assert args.procs == ["/tmp/emb_b"]
@@ -27,12 +28,17 @@ class TestCLIArgs:
         from cli.main import build_parser
 
         parser = build_parser()
-        args = parser.parse_args([
-            "analyze",
-            "--regs", "/tmp/a",
-            "--procs", "/tmp/b",
-            "--threshold", "0.85",
-        ])
+        args = parser.parse_args(
+            [
+                "analyze",
+                "--regs",
+                "/tmp/a",
+                "--procs",
+                "/tmp/b",
+                "--threshold",
+                "0.85",
+            ]
+        )
         assert args.threshold == 0.85
 
     def test_parse_analyze_with_graph(self):
@@ -40,12 +46,17 @@ class TestCLIArgs:
         from cli.main import build_parser
 
         parser = build_parser()
-        args = parser.parse_args([
-            "analyze",
-            "--regs", "/tmp/a",
-            "--procs", "/tmp/b",
-            "--graph", "graph.dot",
-        ])
+        args = parser.parse_args(
+            [
+                "analyze",
+                "--regs",
+                "/tmp/a",
+                "--procs",
+                "/tmp/b",
+                "--graph",
+                "graph.dot",
+            ]
+        )
         assert args.graph == "graph.dot"
 
     def test_parse_benchmark_command(self):
@@ -53,10 +64,13 @@ class TestCLIArgs:
         from cli.main import build_parser
 
         parser = build_parser()
-        args = parser.parse_args([
-            "benchmark",
-            "--kernel", "cosine",
-        ])
+        args = parser.parse_args(
+            [
+                "benchmark",
+                "--kernel",
+                "cosine",
+            ]
+        )
         assert args.command == "benchmark"
         assert args.kernel == "cosine"
 
@@ -65,12 +79,17 @@ class TestCLIArgs:
         from cli.main import build_parser
 
         parser = build_parser()
-        args = parser.parse_args([
-            "report",
-            "--regs", "/tmp/a",
-            "--procs", "/tmp/b",
-            "--type", "gaps",
-        ])
+        args = parser.parse_args(
+            [
+                "report",
+                "--regs",
+                "/tmp/a",
+                "--procs",
+                "/tmp/b",
+                "--type",
+                "gaps",
+            ]
+        )
         assert args.command == "report"
         assert args.type == "gaps"
 
