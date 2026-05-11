@@ -23,11 +23,11 @@ from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Optional
 
-PARSE_TIMEOUT = 30  # seconds per PDF before we kill the worker
-
-import fitz          # PyMuPDF
+import fitz  # PyMuPDF
 import spacy
 import dateparser
+
+PARSE_TIMEOUT = 30  # seconds per PDF before we kill the worker
 
 # ---------------------------------------------------------------------------
 # Paths
