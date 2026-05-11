@@ -3,7 +3,7 @@ project(regmap CUDA CXX)
 
 set(CMAKE_CUDA_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CUDA_ARCHITECTURES 60 70 75 80 86 89 90 120)
+set(CMAKE_CUDA_ARCHITECTURES 60 70 75 80 86 89 90)
 
 # Multi-arch fat binary — supports GPUs from P100 (sm_60) to RTX 5080 (sm_120).
 # CUDA runtime picks the correct variant at load time.
