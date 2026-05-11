@@ -1,8 +1,5 @@
 tests/sample_docs/
 pipeline/scraper.py
-pipeline/parser.py
-pipeline/embedder.py
-CLAUDE.md
 build/
 *.npy
 *.pdf

@@ -18,7 +18,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pytest pytest-xdist ruff black
+          pip install pytest pytest-xdist ruff black numpy
           pip install -e . 2>/dev/null || true
 
       - name: Run tests
