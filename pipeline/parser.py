@@ -34,8 +34,8 @@ PARSE_TIMEOUT = 30  # seconds per PDF before we kill the worker
 # ---------------------------------------------------------------------------
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DOC_DIR  = PROJECT_ROOT / "tests" / "sample_docs" / "doe_orders"
-OUT_DIR  = PROJECT_ROOT / "tests" / "sample_docs" / "parsed"
+DOC_DIR = PROJECT_ROOT / "tests" / "sample_docs" / "doe_orders"
+OUT_DIR = PROJECT_ROOT / "tests" / "sample_docs" / "parsed"
 LOG_FILE = OUT_DIR / "parser.log"
 
 # ---------------------------------------------------------------------------
@@ -44,38 +44,40 @@ LOG_FILE = OUT_DIR / "parser.log"
 
 # DOE directive references: DOE O 251.1C, DOE P 226.1B, DOE M 435.1-1
 _DOE_REF = re.compile(
-    r'\bDOE\s+[OPMGN]\s+[\d]+\.[\d]+[A-Za-z\d.\-]*'
-    r'(?:\s+Chg\s*\d+)?(?:\s+\([A-Za-z]+\))?',
+    r"\bDOE\s+[OPMGN]\s+[\d]+\.[\d]+[A-Za-z\d.\-]*"
+    r"(?:\s+Chg\s*\d+)?(?:\s+\([A-Za-z]+\))?",
     re.IGNORECASE,
 )
 # CFR: 10 CFR 830, 48 CFR 952.204-2, 10 C.F.R. § 835
 _CFR_REF = re.compile(
-    r'\b(\d+)\s+C\.?F\.?R\.?\s+(?:[Pp]arts?\s+|§\s*)?(\d+[\d.\-]*)',
+    r"\b(\d+)\s+C\.?F\.?R\.?\s+(?:[Pp]arts?\s+|§\s*)?(\d+[\d.\-]*)",
 )
 # USC: 50 U.S.C. Section 2406, 42 USC § 7158
 _USC_REF = re.compile(
-    r'\b(\d+)\s+U\.?S\.?C\.?\s+(?:[Ss]ec(?:tions?|\.?)\s*|§\s*)?(\d+[\d.\-]*)',
+    r"\b(\d+)\s+U\.?S\.?C\.?\s+(?:[Ss]ec(?:tions?|\.?)\s*|§\s*)?(\d+[\d.\-]*)",
 )
 # Executive Orders
-_EO_REF = re.compile(r'\bExecutive\s+Order\s+(\d+)', re.IGNORECASE)
+_EO_REF = re.compile(r"\bExecutive\s+Order\s+(\d+)", re.IGNORECASE)
 # Public Law
 _PL_REF = re.compile(
-    r'\b(?:P\.?L\.?|Public\s+Law)\s+(\d+[-–]\d+)', re.IGNORECASE,
+    r"\b(?:P\.?L\.?|Public\s+Law)\s+(\d+[-–]\d+)",
+    re.IGNORECASE,
 )
 # Homeland Security Presidential Directives
-_HSPD_REF = re.compile(r'\bHSPD[-\s](\d+)', re.IGNORECASE)
+_HSPD_REF = re.compile(r"\bHSPD[-\s](\d+)", re.IGNORECASE)
 
 # Obligation sentences: contains "shall" or "must" as a modal
 _OBLIGATION_RE = re.compile(
-    r'[^.!?]*\b(?:shall|must)\b[^.!?]*[.!?]', re.IGNORECASE,
+    r"[^.!?]*\b(?:shall|must)\b[^.!?]*[.!?]",
+    re.IGNORECASE,
 )
 # Definition patterns
-_DEF_INLINE  = re.compile(
+_DEF_INLINE = re.compile(
     r'"([^"]{2,80})"\s+means\s+([^.]{10,300}\.)',
     re.IGNORECASE,
 )
 _DEF_CAPS = re.compile(
-    r'\b([A-Z][A-Z\s]{2,50})\s+means\s+([^.]{10,300}\.)',
+    r"\b([A-Z][A-Z\s]{2,50})\s+means\s+([^.]{10,300}\.)",
 )
 _DEF_PHRASE = re.compile(
     r'\bthe\s+term\s+"([^"]{2,80})"\s+(?:means|is\s+defined\s+as)\s+([^.]{10,300}\.)',
@@ -84,64 +86,70 @@ _DEF_PHRASE = re.compile(
 
 # Page-header noise: "DOE O 151.1D  \n  8-11-2016" repeating at top of each page
 _PAGE_HEADER = re.compile(
-    r'\n\s*\d*\s*\n?\s*DOE\s+[OPMGN]\s+[\d]+\.[\d]+[A-Za-z\d.\- ]*\n\s*[\d\-]+\s*\n',
+    r"\n\s*\d*\s*\n?\s*DOE\s+[OPMGN]\s+[\d]+\.[\d]+[A-Za-z\d.\- ]*\n\s*[\d\-]+\s*\n",
     re.IGNORECASE,
 )
 # Catch the alternate header layout (page num on separate line)
 _PAGE_HEADER2 = re.compile(
-    r'\n\s*DOE\s+[OPMGN]\s+[\d]+\.[\d]+[A-Za-z\d.\- ]*\s*\n\s*\d+\s*\n\s*[\d\-]+\s*\n',
+    r"\n\s*DOE\s+[OPMGN]\s+[\d]+\.[\d]+[A-Za-z\d.\- ]*\s*\n\s*\d+\s*\n\s*[\d\-]+\s*\n",
     re.IGNORECASE,
 )
 
 # Section number on its own line: "1.", "2.", ..., "25."
-_SEC_NUM_LINE = re.compile(r'^\s*(\d{1,2})\.\s*$')
+_SEC_NUM_LINE = re.compile(r"^\s*(\d{1,2})\.\s*$")
 # Section heading: ALL-CAPS words (2+ chars) followed by period
-_SEC_HEADING  = re.compile(r'^([A-Z][A-Z\s,/()\-]{2,80})\.\s*(.*)')
+_SEC_HEADING = re.compile(r"^([A-Z][A-Z\s,/()\-]{2,80})\.\s*(.*)")
 
 # ---------------------------------------------------------------------------
 # Data structures
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class Citation:
-    cit_type:  str   # cfr | doe | usc | eo | pl | hspd
-    reference: str   # canonical citation text
-    context:   str   # surrounding ~80 chars
+    cit_type: str  # cfr | doe | usc | eo | pl | hspd
+    reference: str  # canonical citation text
+    context: str  # surrounding ~80 chars
+
 
 @dataclass
 class Obligation:
-    modal:    str   # "shall" or "must"
+    modal: str  # "shall" or "must"
     sentence: str
+
 
 @dataclass
 class Definition:
-    term:       str
+    term: str
     definition: str
+
 
 @dataclass
 class ParsedSection:
     section_id: str
-    heading:    str
-    text:       str
-    citations:  list = field(default_factory=list)
+    heading: str
+    text: str
+    citations: list = field(default_factory=list)
     obligations: list = field(default_factory=list)
     definitions: list = field(default_factory=list)
-    dates:      list = field(default_factory=list)
-    agencies:   list = field(default_factory=list)
+    dates: list = field(default_factory=list)
+    agencies: list = field(default_factory=list)
+
 
 @dataclass
 class ParsedDocument:
-    source_file:      str
-    doc_id:           str   # "DOE O 151.1D"
-    doc_type:         str   # "Order" | "Policy" | "Manual" | "Guide" | "Notice"
-    subject:          str
-    approved_date:    str
+    source_file: str
+    doc_id: str  # "DOE O 151.1D"
+    doc_type: str  # "Order" | "Policy" | "Manual" | "Guide" | "Notice"
+    subject: str
+    approved_date: str
     initiating_office: str
-    page_count:       int
-    sections:         list = field(default_factory=list)
-    all_citations:    list = field(default_factory=list)
-    all_obligations:  list = field(default_factory=list)
-    all_definitions:  list = field(default_factory=list)
+    page_count: int
+    sections: list = field(default_factory=list)
+    all_citations: list = field(default_factory=list)
+    all_obligations: list = field(default_factory=list)
+    all_definitions: list = field(default_factory=list)
+
 
 # ---------------------------------------------------------------------------
 # NLP setup (module-level to load once)
@@ -149,19 +157,22 @@ class ParsedDocument:
 
 _nlp: Optional[spacy.Language] = None
 
+
 def _get_nlp() -> spacy.Language:
     global _nlp
     if _nlp is None:
         _nlp = spacy.load("en_core_web_sm", disable=["parser", "lemmatizer"])
     return _nlp
 
+
 # ---------------------------------------------------------------------------
 # Text extraction
 # ---------------------------------------------------------------------------
 
+
 def _extract_full_text(pdf_path: Path) -> tuple[str, int]:
     """Return (concatenated_text, page_count) from a PDF."""
-    doc  = fitz.open(str(pdf_path))
+    doc = fitz.open(str(pdf_path))
     pages = []
     for page in doc:
         pages.append(page.get_text())
@@ -174,53 +185,64 @@ def _clean_text(text: str) -> str:
     text = _PAGE_HEADER.sub("\n", text)
     text = _PAGE_HEADER2.sub("\n", text)
     # Collapse 3+ blank lines to 2
-    text = re.sub(r'\n{3,}', '\n\n', text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
     return text
+
 
 # ---------------------------------------------------------------------------
 # Header metadata extraction
 # ---------------------------------------------------------------------------
 
+
 def _extract_metadata(text: str) -> dict:
     """Pull doc_id, subject, date, office from document header text."""
     meta = {
-        "doc_id":           "",
-        "doc_type":         "Order",
-        "subject":          "",
-        "approved_date":    "",
+        "doc_id": "",
+        "doc_type": "Order",
+        "subject": "",
+        "approved_date": "",
         "initiating_office": "",
     }
 
     # Doc ID: "DOE O 151.1D" or "DOE O 151.1D Chg 1"
-    m = re.search(r'\bDOE\s+([OPMGN])\s+([\d]+\.[\d]+[A-Za-z\d.\-]*(?:\s+Chg\s*\d+)?)', text[:500])
+    m = re.search(
+        r"\bDOE\s+([OPMGN])\s+([\d]+\.[\d]+[A-Za-z\d.\-]*(?:\s+Chg\s*\d+)?)", text[:500]
+    )
     if m:
-        type_map = {"O": "Order", "P": "Policy", "M": "Manual",
-                    "G": "Guide",  "N": "Notice"}
-        meta["doc_id"]   = f"DOE {m.group(1)} {m.group(2).strip()}"
+        type_map = {
+            "O": "Order",
+            "P": "Policy",
+            "M": "Manual",
+            "G": "Guide",
+            "N": "Notice",
+        }
+        meta["doc_id"] = f"DOE {m.group(1)} {m.group(2).strip()}"
         meta["doc_type"] = type_map.get(m.group(1), "Order")
 
     # Subject line
-    m = re.search(r'SUBJECT[:\s]+([^\n]{5,200})', text[:1500], re.IGNORECASE)
+    m = re.search(r"SUBJECT[:\s]+([^\n]{5,200})", text[:1500], re.IGNORECASE)
     if m:
         meta["subject"] = m.group(1).strip()
 
     # Approval date
-    m = re.search(r'Approved\s*[:\s]+([^\n]{5,30})', text[:800], re.IGNORECASE)
+    m = re.search(r"Approved\s*[:\s]+([^\n]{5,30})", text[:800], re.IGNORECASE)
     if m:
         raw = m.group(1).strip()
         parsed = dateparser.parse(raw, settings={"RETURN_AS_TIMEZONE_AWARE": False})
         meta["approved_date"] = parsed.strftime("%Y-%m-%d") if parsed else raw
 
     # Initiating office
-    m = re.search(r'INITIATED\s+BY[:\s]+([^\n]{5,100})', text[:1000], re.IGNORECASE)
+    m = re.search(r"INITIATED\s+BY[:\s]+([^\n]{5,100})", text[:1000], re.IGNORECASE)
     if m:
         meta["initiating_office"] = m.group(1).strip()
 
     return meta
 
+
 # ---------------------------------------------------------------------------
 # Section splitting
 # ---------------------------------------------------------------------------
+
 
 def _split_sections(text: str) -> list[dict]:
     """
@@ -238,23 +260,25 @@ def _split_sections(text: str) -> list[dict]:
 
     def _flush():
         if cur_num and cur_heading:
-            sections.append({
-                "id":      cur_num,
-                "heading": cur_heading,
-                "text":    "\n".join(cur_lines).strip(),
-            })
+            sections.append(
+                {
+                    "id": cur_num,
+                    "heading": cur_heading,
+                    "text": "\n".join(cur_lines).strip(),
+                }
+            )
 
     i = 0
     while i < len(lines):
         stripped = lines[i].strip()
 
         # Format B: "1. PURPOSE. text" (number + heading on same line)
-        m = re.match(r'^(\d{1,2})\.\s+([A-Z][A-Z ,/()\-]{2,80})\.\s*(.*)', stripped)
+        m = re.match(r"^(\d{1,2})\.\s+([A-Z][A-Z ,/()\-]{2,80})\.\s*(.*)", stripped)
         if m:
             _flush()
-            cur_num     = m.group(1)
+            cur_num = m.group(1)
             cur_heading = m.group(2).strip()
-            cur_lines   = [m.group(3)] if m.group(3).strip() else []
+            cur_lines = [m.group(3)] if m.group(3).strip() else []
             i += 1
             continue
 
@@ -262,9 +286,9 @@ def _split_sections(text: str) -> list[dict]:
         m_num = _SEC_NUM_LINE.match(stripped)
         if m_num:
             _flush()
-            cur_num     = m_num.group(1)
+            cur_num = m_num.group(1)
             cur_heading = None
-            cur_lines   = []
+            cur_lines = []
             i += 1
             # Scan ahead for the heading (skip blanks)
             while i < len(lines):
@@ -294,15 +318,17 @@ def _split_sections(text: str) -> list[dict]:
 
     return sections
 
+
 # ---------------------------------------------------------------------------
 # NLP extractors
 # ---------------------------------------------------------------------------
+
 
 def _extract_citations(text: str) -> list[Citation]:
     cits: list[Citation] = []
 
     def _ctx(m):
-        s, e = max(0, m.start()-40), min(len(text), m.end()+40)
+        s, e = max(0, m.start() - 40), min(len(text), m.end() + 40)
         return text[s:e].replace("\n", " ").strip()
 
     for m in _DOE_REF.finditer(text):
@@ -335,7 +361,7 @@ def _extract_obligations(text: str) -> list[Obligation]:
         sent = m.group().strip()
         if len(sent) < 15 or len(sent) > 600:
             continue
-        modal = "shall" if re.search(r'\bshall\b', sent, re.IGNORECASE) else "must"
+        modal = "shall" if re.search(r"\bshall\b", sent, re.IGNORECASE) else "must"
         results.append(Obligation(modal, sent.replace("\n", " ")))
     # Deduplicate
     seen: set[str] = set()
@@ -364,16 +390,16 @@ def _extract_definitions(text: str) -> list[Definition]:
 def _extract_dates(text: str) -> list[str]:
     """Find dates in regulatory formats (M-D-YYYY, spelled out, etc.)."""
     date_re = re.compile(
-        r'\b(?:'
-        r'\d{1,2}[-/]\d{1,2}[-/]\d{2,4}'               # 8-11-2016
-        r'|(?:January|February|March|April|May|June|'
-        r'July|August|September|October|November|December)'
-        r'\s+\d{1,2},?\s+\d{4}'                          # January 1, 2020
-        r')',
+        r"\b(?:"
+        r"\d{1,2}[-/]\d{1,2}[-/]\d{2,4}"  # 8-11-2016
+        r"|(?:January|February|March|April|May|June|"
+        r"July|August|September|October|November|December)"
+        r"\s+\d{1,2},?\s+\d{4}"  # January 1, 2020
+        r")",
         re.IGNORECASE,
     )
     dates: list[str] = []
-    seen:  set[str]  = set()
+    seen: set[str] = set()
     for m in date_re.finditer(text):
         raw = m.group().strip()
         if raw in seen:
@@ -387,13 +413,27 @@ def _extract_dates(text: str) -> list[str]:
 def _extract_agencies(text: str) -> list[str]:
     """Extract government agency names via spaCy NER + DOE acronym list."""
     DOE_AGENCIES = {
-        "DOE", "NNSA", "DOT", "NRC", "EPA", "OSHA", "OMB", "DOD",
-        "NASA", "GAO", "DHS", "FBI", "CIA", "NSA", "FEMA", "NIST",
+        "DOE",
+        "NNSA",
+        "DOT",
+        "NRC",
+        "EPA",
+        "OSHA",
+        "OMB",
+        "DOD",
+        "NASA",
+        "GAO",
+        "DHS",
+        "FBI",
+        "CIA",
+        "NSA",
+        "FEMA",
+        "NIST",
     }
-    nlp     = _get_nlp()
+    nlp = _get_nlp()
     # Truncate to 100k chars to keep spaCy fast
-    doc     = nlp(text[:100_000])
-    names:  set[str] = set()
+    doc = nlp(text[:100_000])
+    names: set[str] = set()
 
     for ent in doc.ents:
         if ent.label_ in ("ORG", "GPE"):
@@ -403,14 +443,16 @@ def _extract_agencies(text: str) -> list[str]:
 
     # Always include known DOE acronyms found in text
     for acro in DOE_AGENCIES:
-        if re.search(rf'\b{acro}\b', text):
+        if re.search(rf"\b{acro}\b", text):
             names.add(acro)
 
     return sorted(names)
 
+
 # ---------------------------------------------------------------------------
 # Top-level parse function
 # ---------------------------------------------------------------------------
+
 
 def parse_pdf(pdf_path: Path, log: logging.Logger) -> Optional[ParsedDocument]:
     """Parse a single DOE Order PDF into a structured ParsedDocument."""
@@ -424,13 +466,13 @@ def parse_pdf(pdf_path: Path, log: logging.Logger) -> Optional[ParsedDocument]:
         log.warning(f"Nearly empty text in {pdf_path.name} — likely scanned/image PDF")
 
     clean = _clean_text(raw_text)
-    meta  = _extract_metadata(clean)
+    meta = _extract_metadata(clean)
 
     # Extract NLP features from the full document
-    all_cits  = _extract_citations(clean)
+    all_cits = _extract_citations(clean)
     all_obligs = _extract_obligations(clean)
-    all_defs  = _extract_definitions(clean)
-    agencies  = _extract_agencies(clean)
+    all_defs = _extract_definitions(clean)
+    agencies = _extract_agencies(clean)
 
     # Split into sections and annotate each
     raw_sections = _split_sections(clean)
@@ -438,35 +480,35 @@ def parse_pdf(pdf_path: Path, log: logging.Logger) -> Optional[ParsedDocument]:
     for sec in raw_sections:
         text = sec["text"]
         psec = ParsedSection(
-            section_id  = sec["id"],
-            heading     = sec["heading"],
-            text        = text,
-            citations   = [asdict(c) for c in _extract_citations(text)],
-            obligations = [asdict(o) for o in _extract_obligations(text)],
-            definitions = [asdict(d) for d in _extract_definitions(text)],
-            dates       = _extract_dates(text),
-            agencies    = agencies,  # shared across sections (doc-level)
+            section_id=sec["id"],
+            heading=sec["heading"],
+            text=text,
+            citations=[asdict(c) for c in _extract_citations(text)],
+            obligations=[asdict(o) for o in _extract_obligations(text)],
+            definitions=[asdict(d) for d in _extract_definitions(text)],
+            dates=_extract_dates(text),
+            agencies=agencies,  # shared across sections (doc-level)
         )
         parsed_sections.append(psec)
 
     return ParsedDocument(
-        source_file       = pdf_path.name,
-        doc_id            = meta["doc_id"],
-        doc_type          = meta["doc_type"],
-        subject           = meta["subject"],
-        approved_date     = meta["approved_date"],
-        initiating_office = meta["initiating_office"],
-        page_count        = page_count,
-        sections          = [asdict(s) for s in parsed_sections],
-        all_citations     = [asdict(c) for c in all_cits],
-        all_obligations   = [asdict(o) for o in all_obligs[:50]],  # cap for JSON size
-        all_definitions   = [asdict(d) for d in all_defs],
+        source_file=pdf_path.name,
+        doc_id=meta["doc_id"],
+        doc_type=meta["doc_type"],
+        subject=meta["subject"],
+        approved_date=meta["approved_date"],
+        initiating_office=meta["initiating_office"],
+        page_count=page_count,
+        sections=[asdict(s) for s in parsed_sections],
+        all_citations=[asdict(c) for c in all_cits],
+        all_obligations=[asdict(o) for o in all_obligs[:50]],  # cap for JSON size
+        all_definitions=[asdict(d) for d in all_defs],
     )
 
 
 def save_parsed(doc: ParsedDocument, out_dir: Path) -> Path:
     """Write ParsedDocument to JSON in out_dir."""
-    stem     = Path(doc.source_file).stem
+    stem = Path(doc.source_file).stem
     out_path = out_dir / f"{stem}.json"
     out_dir.mkdir(parents=True, exist_ok=True)
     with open(out_path, "w", encoding="utf-8") as fh:
@@ -477,6 +519,7 @@ def save_parsed(doc: ParsedDocument, out_dir: Path) -> Path:
 # ---------------------------------------------------------------------------
 # Per-file timeout via subprocess
 # ---------------------------------------------------------------------------
+
 
 def _parse_worker(pdf_path_str: str, result_queue: mp.Queue) -> None:
     """Worker process: parse one PDF and put the result on the queue."""
@@ -511,9 +554,11 @@ def parse_with_timeout(
 
     return q.get_nowait() if not q.empty() else None
 
+
 # ---------------------------------------------------------------------------
 # Reporting
 # ---------------------------------------------------------------------------
+
 
 def print_summary(doc: ParsedDocument) -> None:
     print(f"\n{'='*60}")
@@ -531,8 +576,10 @@ def print_summary(doc: ParsedDocument) -> None:
 
     print("\n-- Sections --")
     for s in doc.sections:
-        print(f"  [{s['section_id']}] {s['heading']:<30}  "
-              f"oblig={len(s['obligations'])}  cit={len(s['citations'])}")
+        print(
+            f"  [{s['section_id']}] {s['heading']:<30}  "
+            f"oblig={len(s['obligations'])}  cit={len(s['citations'])}"
+        )
 
     if doc.all_citations:
         print("\n-- Sample citations (first 5) --")
@@ -549,15 +596,18 @@ def print_summary(doc: ParsedDocument) -> None:
         for d in doc.all_definitions[:3]:
             print(f"  {d['term']!r:30} => {d['definition'][:60]}...")
 
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
 
 def setup_logging() -> logging.Logger:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     fmt = "%(asctime)s %(levelname)-8s %(message)s"
     logging.basicConfig(
-        level=logging.INFO, format=fmt,
+        level=logging.INFO,
+        format=fmt,
         handlers=[
             logging.StreamHandler(sys.stdout),
             logging.FileHandler(LOG_FILE, encoding="utf-8"),
