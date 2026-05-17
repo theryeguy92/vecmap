@@ -622,7 +622,7 @@ def main(test_only: bool = False) -> None:
     log.info(f"Input : {DOC_DIR}")
     log.info(f"Output: {OUT_DIR}")
 
-    pdfs = sorted(DOC_DIR.glob("*.pdf")) + sorted(DOC_DIR.glob("*.PDF"))
+    pdfs = sorted(DOC_DIR.rglob("*.pdf")) + sorted(DOC_DIR.rglob("*.PDF"))
     if not pdfs:
         log.error(f"No PDFs found in {DOC_DIR}")
         sys.exit(1)
@@ -656,7 +656,18 @@ def main(test_only: bool = False) -> None:
 
 
 if __name__ == "__main__":
-    test_mode = "--test" not in sys.argv[1:] or "--test" in sys.argv[1:]
-    # Default to test mode when run directly; pass --all for full run
-    full = "--all" in sys.argv[1:]
-    main(test_only=not full)
+    import argparse
+    ap = argparse.ArgumentParser(description="Parse DOE Order PDFs")
+    ap.add_argument("--input-dir", default=str(DOC_DIR),
+                    help=f"Directory containing PDFs (default: {DOC_DIR})")
+    ap.add_argument("--output-dir", default=str(OUT_DIR),
+                    help=f"Output directory for parsed JSON (default: {OUT_DIR})")
+    ap.add_argument("--all", action="store_true",
+                    help="Process all PDFs (default: test mode, 5 PDFs only)")
+    args = ap.parse_args()
+
+    DOC_DIR = Path(args.input_dir)
+    OUT_DIR = Path(args.output_dir)
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    main(test_only=not args.all)
